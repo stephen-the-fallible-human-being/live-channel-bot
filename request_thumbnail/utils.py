@@ -1,18 +1,6 @@
 import discord
 
 async def send_claim_message(interaction: discord.Interaction, youtube_link: str, category: str, channel_name: str):
-    """
-    Send a claim message to the specified channel
-    
-    Args:
-        interaction: Discord interaction object
-        youtube_link: The YouTube video URL
-        category: The selected category name
-        channel_name: Target channel name (a, b, or c)
-    
-    Returns:
-        bool: True if successful, False if channel not found
-    """
     target_channel = discord.utils.get(interaction.guild.channels, name=channel_name)
     
     if not target_channel:
