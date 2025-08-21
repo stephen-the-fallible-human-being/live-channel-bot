@@ -1,11 +1,12 @@
-modules = ["python-3.11"]
+# Define the language for the Replit App
 
 [packager]
 language = "python3"
+ignoredPackages = ["discord.py"]
 
 [packager.features]
 guessImports = false
-ignoredPackages = ["discord.py"]
+
 
 [agent]
 expertMode = true
