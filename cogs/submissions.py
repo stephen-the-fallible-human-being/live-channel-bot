@@ -80,7 +80,7 @@ class SubmitButtonView(discord.ui.View):
         super().__init__(timeout=None)  # Persistent view
 
     @discord.ui.button(label='Submit YouTube Video', style=discord.ButtonStyle.primary, emoji='📹')
-    async def submit_video(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def submit_video(self, interaction: discord.Interaction):
         modal = YouTubeLinkModal()
         await interaction.response.send_modal(modal)
 

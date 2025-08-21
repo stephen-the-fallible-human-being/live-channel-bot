@@ -35,4 +35,4 @@ async def on_ready():
 # For production, use environment variables or Replit secrets
 if __name__ == "__main__":
     # You'll need to add your bot token here or use Replit secrets
-    bot.run('YOUR_BOT_TOKEN')  # Replace with your actual token
+    bot.run('DISCORD_BOT_TOKEN')  # Replace with your actual token
