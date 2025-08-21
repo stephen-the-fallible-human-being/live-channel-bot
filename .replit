@@ -1,4 +1,11 @@
 modules = ["python-3.11"]
+
+[packager]
+language = "python3"
+
+[packager.features]
+guessImports = false
+
 [agent]
 expertMode = true
 
