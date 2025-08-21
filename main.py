@@ -1,12 +1,10 @@
 import discord
-from discord.ext import commands
 import asyncio
 import os
 
 # Bot setup
 intents = discord.Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix=None, intents=intents)
+bot = discord.Bot(intents=intents)
 
 async def load_cogs():
     """Load all cogs from the cogs folder"""
@@ -21,18 +19,12 @@ async def load_cogs():
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
-
     # Load cogs
     await load_cogs()
 
-    try:
-        synced = await bot.tree.sync()
-        print(f"Synced {len(synced)} command(s)")
-    except Exception as e:
-        print(f"Failed to sync commands: {e}")
 
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token
 # For production, use environment variables or Replit secrets
 if __name__ == "__main__":
     # You'll need to add your bot token here or use Replit secrets
-    bot.run('DISCORD_BOT_TOKEN')  # Replace with your actual token
+    bot.run(os.getenv('DISCORD_BOT_TOKEN'))  # Replace with your actual token

@@ -7,7 +7,7 @@ class RequestThumbnailButtonView(discord.ui.View):
         super().__init__(timeout=None)  # Persistent view
 
     @discord.ui.button(label='Request Thumbnail', style=discord.ButtonStyle.primary, emoji='🖼️')
-    async def request_thumbnail(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def request_thumbnail(self, button: discord.ui.Button, interaction: discord.Interaction):
         modal = RequestThumbnailModal()
         await interaction.response.send_modal(modal)
 
@@ -19,12 +19,12 @@ class CategorySelectView(discord.ui.View):
     @discord.ui.select(
         placeholder="Choose a category...",
         options=[
-            discord.SelectOption(label="a - Large Streamer Content", value="a", emoji="🎮"),
-            discord.SelectOption(label="b - IRL Content", value="b", emoji="🎬"),
-            discord.SelectOption(label="c - Reactions/Gaming", value="c", emoji="🎯")
+            discord.SelectOption(label="a - Large Streamer Content", value="a"),
+            discord.SelectOption(label="b - IRL Content", value="b"),
+            discord.SelectOption(label="c - Reactions/Gaming", value="c")
         ]
     )
-    async def category_select(self, interaction: discord.Interaction, select: discord.ui.Select):
+    async def category_select(self, select: discord.ui.Select, interaction: discord.Interaction):
         from .utils import send_claim_message
         
         category_map = {

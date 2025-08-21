@@ -1,13 +1,12 @@
 
 import discord
 from discord.ext import commands
-from discord import app_commands
 
 class Reload(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="reload", description="Reload a specific cog")
+    @discord.slash_command(name="reload", description="Reload a specific cog")
     async def reload_cog(self, interaction: discord.Interaction, cog_name: str):
         try:
             await self.bot.reload_extension(f'cogs.{cog_name}')
@@ -15,7 +14,7 @@ class Reload(commands.Cog):
         except Exception as e:
             await interaction.response.send_message(f'❌ Failed to reload cog {cog_name}: {e}', ephemeral=True)
 
-    @app_commands.command(name="reload all", description="Reload all cogs")
+    @discord.slash_command(name="reload all", description="Reload all cogs")
     async def reload_all_cogs(self, interaction: discord.Interaction):
         reloaded = []
         failed = []
