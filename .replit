@@ -5,6 +5,7 @@ language = "python3"
 
 [packager.features]
 guessImports = false
+ignoredPackages = ["discord.py"]
 
 [agent]
 expertMode = true
