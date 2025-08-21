@@ -15,7 +15,7 @@ class Reload(commands.Cog):
         except Exception as e:
             await interaction.response.send_message(f'❌ Failed to reload cog {cog_name}: {e}', ephemeral=True)
 
-    @app_commands.command(name="reload_all", description="Reload all cogs")
+    @app_commands.command(name="reload all", description="Reload all cogs")
     async def reload_all_cogs(self, interaction: discord.Interaction):
         reloaded = []
         failed = []
@@ -34,7 +34,7 @@ class Reload(commands.Cog):
         
         await interaction.response.send_message(message, ephemeral=True)
 
-    @app_commands.command(name="list_cogs", description="List all loaded cogs")
+    @app_commands.command(name="list cogs", description="List all loaded cogs")
     async def list_cogs(self, interaction: discord.Interaction):
         cogs = [ext.split('.')[-1] for ext in self.bot.extensions.keys() if ext.startswith('cogs.')]
         await interaction.response.send_message(f"Loaded cogs: {', '.join(cogs)}", ephemeral=True)
