@@ -13,3 +13,13 @@ expertMode = true
 channel = "stable-25_05"
 
 [workflows]
+runButton = "Run"
+
+[[workflows.workflow]]
+name = "Run"
+author = 45995006
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
