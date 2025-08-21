@@ -1,4 +1,3 @@
-
 import discord
 
 async def send_claim_message(interaction: discord.Interaction, youtube_link: str, category: str, channel_name: str):
