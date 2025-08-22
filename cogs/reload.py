@@ -7,15 +7,15 @@ class ReloadCog(commands.Cog):
         self.bot = bot
 
     @discord.slash_command(name="reload", description="Reload a specific cog")
-    async def reload_cog(self, interaction: discord.Interaction, cog_name: str):
+    async def reload_cog(self, ctx: discord.ApplicationContext, cog_name: str):
         try:
             await self.bot.reload_extension(f'cogs.{cog_name}')
-            await interaction.response.send_message(f'✅ Successfully reloaded cog: {cog_name}', ephemeral=True)
+            await ctx.respond(f'✅ Successfully reloaded cog: {cog_name}', ephemeral=True)
         except Exception as e:
-            await interaction.response.send_message(f'❌ Failed to reload cog {cog_name}: {e}', ephemeral=True)
+            await ctx.respond(f'❌ Failed to reload cog {cog_name}: {e}', ephemeral=True)
 
-    @discord.slash_command(name="reload all", description="Reload all cogs")
-    async def reload_all_cogs(self, interaction: discord.Interaction):
+    @discord.slash_command(name="reload_all", description="Reload all cogs")
+    async def reload_all_cogs(self, ctx: discord.ApplicationContext):
         reloaded = []
         failed = []
         
@@ -31,12 +31,12 @@ class ReloadCog(commands.Cog):
         if failed:
             message += f"\n❌ Failed: {', '.join(failed)}"
         
-        await interaction.response.send_message(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=True)
 
-    @discord.slash_command(name="list cogs", description="List all loaded cogs")
-    async def list_cogs(self, interaction: discord.Interaction):
+    @discord.slash_command(name="list_cogs", description="List all loaded cogs")
+    async def list_cogs(self, ctx: discord.ApplicationContext):
         cogs = [ext.split('.')[-1] for ext in self.bot.extensions.keys() if ext.startswith('cogs.')]
-        await interaction.response.send_message(f"Loaded cogs: {', '.join(cogs)}", ephemeral=True)
+        await ctx.respond(f"Loaded cogs: {', '.join(cogs)}", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(ReloadCog(bot))
