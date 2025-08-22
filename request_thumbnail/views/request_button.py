@@ -6,6 +6,6 @@ class RequestThumbnailButtonView(discord.ui.View):
         super().__init__(timeout=None)  # Persistent view
 
     @discord.ui.button(label='Request Thumbnail', style=discord.ButtonStyle.primary)
-    async def request_thumbnail(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def request_thumbnail(self, button: discord.ui.Button, interaction: discord.Interaction):
         modal = URLModal()
         await interaction.response.send_modal(modal)

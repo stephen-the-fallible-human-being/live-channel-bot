@@ -1,5 +1,4 @@
 import discord
-import asyncio
 import os
 
 # Bot setup

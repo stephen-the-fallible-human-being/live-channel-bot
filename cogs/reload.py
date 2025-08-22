@@ -38,5 +38,5 @@ class ReloadCog(commands.Cog):
         cogs = [ext.split('.')[-1] for ext in self.bot.extensions.keys() if ext.startswith('cogs.')]
         await ctx.respond(f"Loaded cogs: {', '.join(cogs)}", ephemeral=True)
 
-async def setup(bot):
-    await bot.add_cog(ReloadCog(bot))
+def setup(bot):
+    bot.add_cog(ReloadCog(bot))

@@ -11,12 +11,12 @@ class RequestThumbnailCog(commands.Cog):
     async def setup_thumbnail(self, ctx: discord.ApplicationContext):
         embed = discord.Embed(
             title="🖼️ Thumbnail Request System",
-            description="Click the button below to request a thumbnail for your YouTube video.\n\nSelect a category and your request will be sent to the appropriate channel for creators to claim.",
+            description="Click the button below to request a thumbnail for your YouTube video.",
             color=discord.Color.blue()
         )
         
         view = RequestThumbnailButtonView()
         await ctx.respond(embed=embed, view=view)
 
-async def setup(bot):
-    await bot.add_cog(RequestThumbnailCog(bot))
+def setup(bot):
+    bot.add_cog(RequestThumbnailCog(bot))
