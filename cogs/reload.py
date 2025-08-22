@@ -2,7 +2,7 @@
 import discord
 from discord.ext import commands
 
-class Reload(commands.Cog):
+class ReloadCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -33,10 +33,10 @@ class Reload(commands.Cog):
         
         await interaction.response.send_message(message, ephemeral=True)
 
-    @app_commands.command(name="list cogs", description="List all loaded cogs")
+    @discord.slash_command(name="list cogs", description="List all loaded cogs")
     async def list_cogs(self, interaction: discord.Interaction):
         cogs = [ext.split('.')[-1] for ext in self.bot.extensions.keys() if ext.startswith('cogs.')]
         await interaction.response.send_message(f"Loaded cogs: {', '.join(cogs)}", ephemeral=True)
 
 async def setup(bot):
-    await bot.add_cog(Reload(bot))
+    await bot.add_cog(ReloadCog(bot))

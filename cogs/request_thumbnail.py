@@ -1,13 +1,13 @@
 
 import discord
 from discord.ext import commands
-from request_thumbnail.views import RequestThumbnailButtonView
+from request_thumbnail.views.request_button import RequestThumbnailButtonView
 
 class RequestThumbnailCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @discord.slash_command(name="send request-thumbnail-button", description="Send a button for thumbnail requests")
+    @discord.slash_command(name="send-request-thumbnail-button", description="Send a button for thumbnail requests")
     async def setup_thumbnail(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title="🖼️ Thumbnail Request System",
