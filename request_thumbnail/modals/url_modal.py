@@ -4,14 +4,20 @@ from ..views.select_category import CategorySelectView
 class URLModal(discord.ui.Modal):
   def __init__(self, title="YouTube Video URL Input Form:"):
       super().__init__(title=title)
-      
+      self.youtube_link = discord.ui.InputText(
+          label="YouTube Video URL",
+          placeholder="Enter the URL of your YouTube video",
+          style=discord.InputTextStyle.short,
+          required=True
+      )
+      self.add_item(self.youtube_link)
     
   async def on_submit(self, interaction: discord.Interaction):
       # Show category selection after YouTube link submission
       embed = discord.Embed(
           title="Select Category",
           description=f"YouTube Link: {self.youtube_link.value}\n\nPlease select a category for this thumbnail request:",
-          color=0x0CC212
+          color=discord.Color.brand_red()
       )
 
       view = CategorySelectView(str(self.youtube_link.value))
