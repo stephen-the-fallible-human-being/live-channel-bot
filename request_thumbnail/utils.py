@@ -32,7 +32,7 @@ class ClaimButtonView(discord.ui.View):
         self.claimed_by = None
 
     @discord.ui.button(label='Claim Thumbnail', style=discord.ButtonStyle.success, emoji='✋')
-    async def claim_thumbnail(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def claim_thumbnail(self, interaction: discord.Interaction):
         if self.claimed_by:
             await interaction.response.send_message(
                 f"❌ This thumbnail has already been claimed by {self.claimed_by.mention}!", 

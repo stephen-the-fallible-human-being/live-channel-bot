@@ -1,4 +1,5 @@
 import discord
+from ..utils import send_claim_message
 
 class CategorySelectView(discord.ui.View):
   def __init__(self, youtube_link: str):
@@ -14,7 +15,6 @@ class CategorySelectView(discord.ui.View):
       ]
   )
   async def category_select(self, select: discord.ui.Select, interaction: discord.Interaction):
-      from .utils import send_claim_message
 
       category_map = {
           "a": "Large Streamer Content",
