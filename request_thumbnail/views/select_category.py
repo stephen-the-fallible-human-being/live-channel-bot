@@ -15,8 +15,8 @@ class CategorySelectView(discord.ui.View):
       ]
   )
   async def category_select(self, select: discord.ui.Select, interaction: discord.Interaction):
-    channel_name = select.values[0]
-    target_channel = discord.utils.get(interaction.guild.channels, name=channel_name)
+    category_name = select.values[0]
+    target_channel = discord.utils.get(interaction.guild.channels, name=category_name)
 
     embed = discord.Embed(
       title="New Thumbnail Request",
