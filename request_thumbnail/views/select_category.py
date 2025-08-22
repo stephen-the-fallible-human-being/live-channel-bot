@@ -23,7 +23,11 @@ class CategorySelectView(discord.ui.View):
     claim_button_view = ClaimButtonView(self.youtube_link, target_channel, interaction.user)
 
     await target_channel.send(
-        content=f"{category_role.mention}\n### Thumbnail Request\n{self.youtube_link}", view=claim_button_view
+        content=f"### Thumbnail Request {category_role.mention}\n{self.youtube_link}", view=claim_button_view
+    )
+      
+    await interaction.response.send_message(
+        f"✅ Your thumbnail request has been submitted!", ephemeral=True
     )
 
         
