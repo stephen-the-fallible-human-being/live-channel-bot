@@ -1,5 +1,5 @@
 import discord
-from ..utils import send_claim_message
+from .claim_button import ClaimButtonView
 
 class CategorySelectView(discord.ui.View):
   def __init__(self, youtube_link: str):
@@ -15,6 +15,18 @@ class CategorySelectView(discord.ui.View):
       ]
   )
   async def category_select(self, select: discord.ui.Select, interaction: discord.Interaction):
-      category_channel_name = select.values[0]
-      
+    channel_name = select.values[0]
+    target_channel = discord.utils.get(interaction.guild.channels, name=channel_name)
+
+    embed = discord.Embed(
+      title="New Thumbnail Request",
+      description=f"**YouTube Link:** {self.youtube_link}",
+      color=discord.Color.brand_red()
+    )
+
+    claim_button_view = ClaimButtonView(self.youtube_link, target_channel, interaction.user)
+
+    await target_channel.send(embed=embed, view=claim_button_view)
+
+        
       
