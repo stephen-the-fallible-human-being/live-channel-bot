@@ -12,11 +12,11 @@ class URLModal(discord.ui.Modal):
       )
       self.add_item(self.youtube_link)
     
-  async def on_submit(self, interaction: discord.Interaction):
+  async def callback(self, interaction: discord.Interaction):
       # Show category selection after YouTube link submission
       embed = discord.Embed(
           title="Select Category",
-          description=f"YouTube Link: {self.youtube_link.value}\n\nPlease select a category for this thumbnail request:",
+          description="Please select a category for this thumbnail request:",
           color=discord.Color.brand_red()
       )
 
