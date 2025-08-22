@@ -9,7 +9,7 @@ class ReloadCog(commands.Cog):
     @discord.slash_command(name="reload", description="Reload a specific cog")
     async def reload_cog(self, ctx: discord.ApplicationContext, cog_name: str):
         try:
-            await self.bot.reload_extension(f'cogs.{cog_name}')
+            self.bot.reload_extension(f'cogs.{cog_name}')
             await ctx.respond(f'✅ Successfully reloaded cog: {cog_name}', ephemeral=True)
         except Exception as e:
             await ctx.respond(f'❌ Failed to reload cog {cog_name}: {e}', ephemeral=True)
@@ -22,7 +22,7 @@ class ReloadCog(commands.Cog):
         for cog_name in list(self.bot.extensions.keys()):
             if cog_name.startswith('cogs.'):
                 try:
-                    await self.bot.reload_extension(cog_name)
+                    self.bot.reload_extension(cog_name)
                     reloaded.append(cog_name.split('.')[-1])
                 except Exception as e:
                     failed.append(f"{cog_name.split('.')[-1]}: {e}")
