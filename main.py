@@ -18,12 +18,11 @@ def load_cogs():
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
-    # Load cogs
-    load_cogs()
-
 
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token
 # For production, use environment variables or Replit secrets
 if __name__ == "__main__":
+    # load cogs before connecting the bot to Discord
+    load_cogs()
     # You'll need to add your bot token here or use Replit secrets
     bot.run(os.getenv('DISCORD_BOT_TOKEN'))  # Replace with your actual token
