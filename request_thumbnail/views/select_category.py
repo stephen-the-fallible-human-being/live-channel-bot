@@ -18,14 +18,13 @@ class CategorySelectView(discord.ui.View):
     category_name = select.values[0]
     target_channel = discord.utils.get(interaction.guild.channels, name=category_name)
 
-    embed = discord.Embed(
-      title="New Thumbnail Request",
-      color=discord.Color.brand_red()
-    )
+    category_role = discord.utils.get(interaction.guild.roles, name=category_name)
 
     claim_button_view = ClaimButtonView(self.youtube_link, target_channel, interaction.user)
 
-    await target_channel.send(embed=embed, view=claim_button_view)
+    await target_channel.send(
+        content=f"{category_role.mention}\n### Thumbnail Request\n{self.youtube_link}", view=claim_button_view
+    )
 
         
       
