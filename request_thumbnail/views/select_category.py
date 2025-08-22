@@ -20,7 +20,6 @@ class CategorySelectView(discord.ui.View):
 
     embed = discord.Embed(
       title="New Thumbnail Request",
-      description=f"**YouTube Link:** {self.youtube_link}",
       color=discord.Color.brand_red()
     )
 
