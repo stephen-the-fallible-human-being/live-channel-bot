@@ -4,27 +4,31 @@ class ClaimButtonView(discord.ui.View):
   def __init__(self, youtube_link: str, category: str, requester: discord.Member):
     super().__init__(timeout=None)
     self.youtube_link = youtube_link
-    self.claimed_by = None
+    self.claimer_id = None
 
-  @discord.ui.button(label='Claim', style=discord.ButtonStyle.red, emoji='✋')
-  async def claim_thumbnail(self, button: discord.ui.Button, interaction: discord.Interaction):
-    # if the button is clicked, someone decides to claim the thumbnail
-    # if it was already clicked (claimed), send an message to the user
-    if self.claimed_by:
-      await interaction.response.send_message(
-          f"❌ This thumbnail has already been claimed by {self.claimed_by.display_name}!", 
-          ephemeral=True
-      )
-      return
+    self.claim_button = discord.ui.Button(
+      label='Claim',
+      style=discord.ButtonStyle.green,
+      emoji='✋'
+    )
+    self.claim_button.callback = self.claim_callback
+    self.add_item(self.claim_button)
 
-    # if it wasn't claimed, mark as claimed and update the button
-    # mark as claimed
-    self.claimed_by = interaction.user
+  async def claim_callback(self, interaction: discord.Interaction):
+    self.claimer_id = interaction.user.id
 
     # Update button to show it's claimed
-    button.label = f'Claimed by {interaction.user.display_name}'
-    button.style = discord.ButtonStyle.gray
-    button.disabled = True
+    self.claim_button.label = f'Claimed by {interaction.user.display_name}'
+    self.claim_button.style = discord.ButtonStyle.gray
+    self.claim_button.disabled = True
+
+    # add an unclaim button
+    unclaim_button = discord.ui.Button(
+      label="Unclaim",
+      style=discord.ButtonStyle.red
+    )
+    unclaim_button.callback = self.unclaim_callback
+    self.add_item(unclaim_button)
 
     await interaction.response.edit_message(view=self)
 
@@ -36,3 +40,27 @@ class ClaimButtonView(discord.ui.View):
       )
     except:
       pass
+  
+  async def unclaim_callback(self, interaction: discord.Interaction):
+    # if non-claimer tries to unclaim the thumbnail
+    if interaction.user.id != self.claimer_id:
+      await interaction.response.send_message(
+        "Only the claimer can unclaim a thumbnail request",
+        ephemeral=True
+      )
+    # if claimer decides to unclaim thumbnail
+    else:
+      self.claimer_id = None
+      # clear all buttons
+      self.clear_items()
+      # add a fresh new claim button
+      self.claim_button = discord.ui.Button(
+        label="Claim",
+        style=discord.ButtonStyle.green,
+        emoji="✋"
+      )
+      self.claim_button.callback = self.claim_callback
+      self.add_item(self.claim_button)
+      await interaction.response.edit_message(view=self)
+
+    

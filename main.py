@@ -1,5 +1,11 @@
 import discord
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
+
+# environment variables
+DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 
 # Bot setup
 intents = discord.Intents.default()
@@ -25,4 +31,4 @@ if __name__ == "__main__":
     # load cogs before connecting the bot to Discord
     load_cogs()
     # You'll need to add your bot token here or use Replit secrets
-    bot.run(os.getenv('DISCORD_BOT_TOKEN'))  # Replace with your actual token
+    bot.run(DISCORD_BOT_TOKEN)  # Replace with your actual token
