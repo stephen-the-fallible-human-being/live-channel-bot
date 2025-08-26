@@ -2,35 +2,56 @@
 import discord
 from discord.ext import commands
 
+import asyncio
+
 class ReloadCog(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: discord.Bot):
         self.bot = bot
 
     @discord.slash_command(name="reload", description="Reload a specific cog")
     async def reload_cog(self, ctx: discord.ApplicationContext, cog_name: str):
+        await ctx.defer()
+        extension_path = f'cogs.{cog_name}'
+        action = "reloaded"
         try:
-            self.bot.reload_extension(f'cogs.{cog_name}')
-            await ctx.respond(f'✅ Successfully reloaded cog: {cog_name}', ephemeral=True)
+            try:
+                # Try to reload if already loaded
+                await asyncio.to_thread(self.bot.reload_extension, extension_path)
+            except commands.ExtensionNotLoaded:
+                # Load if not loaded yet
+                await asyncio.to_thread(self.bot.load_extension, extension_path)
+                action = "loaded"
+            
+            # Sync commands after reload/load
+            await self.bot.sync_commands()
+            await ctx.followup.send(f"✅ Successfully {action} cog: {cog_name}", ephemeral=True)
+
         except Exception as e:
-            await ctx.respond(f'❌ Failed to reload cog {cog_name}: {e}', ephemeral=True)
+            await ctx.followup.send(f"❌ Failed to reload/load cog {cog_name}: {e}", ephemeral=True)
 
     @discord.slash_command(name="reload_all", description="Reload all cogs")
     async def reload_all_cogs(self, ctx: discord.ApplicationContext):
         reloaded = []
         failed = []
-        
+
         for cog_name in list(self.bot.extensions.keys()):
             if cog_name.startswith('cogs.'):
                 try:
-                    self.bot.reload_extension(cog_name)
-                    reloaded.append(cog_name.split('.')[-1])
+                    try:
+                        await asyncio.to_thread(self.bot.reload_extension, cog_name)
+                        reloaded.append(cog_name.split('.')[-1])
+                    except commands.ExtensionNotLoaded:
+                        await asyncio.to_thread(self.bot.load_extension, cog_name)
                 except Exception as e:
                     failed.append(f"{cog_name.split('.')[-1]}: {e}")
-        
+
+        # Sync commands after all reloads
+        await self.bot.sync_commands()
+
         message = f"✅ Reloaded: {', '.join(reloaded)}"
         if failed:
             message += f"\n❌ Failed: {', '.join(failed)}"
-        
+
         await ctx.respond(message, ephemeral=True)
 
     @discord.slash_command(name="list_cogs", description="List all loaded cogs")
