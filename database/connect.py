@@ -1,12 +1,12 @@
 from tortoise import Tortoise
 
-DB_URL = "sqlite://db/live-channel-database.db"
+DB_URL = "sqlite://db.sqlite3"
 
 config = {
     "connections": {"default": DB_URL},
     "apps": {
         "models": {
-            "models": ["db.models"],  # points to your models
+            "models": ["database.models"],  # points to your models
             "default_connection": "default",
         }
     },

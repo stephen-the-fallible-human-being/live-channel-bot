@@ -1,4 +1,3 @@
-
 import discord
 from discord.ext import commands
 from request_thumbnail.views.request_button import RequestThumbnailButtonView

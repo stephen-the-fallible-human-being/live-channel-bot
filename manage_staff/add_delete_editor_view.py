@@ -2,7 +2,7 @@ import discord
 from .add_delete_view import AddDeleteView
 from .add_creator_modal import AddCreatorModal
 
-class AddDeleteCreatorView(AddDeleteView):
+class AddDeleteEditorView(AddDeleteView):
     def __init__(self):
         super().__init__()
     

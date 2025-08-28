@@ -1,7 +1,7 @@
 import discord
 
 class UnclaimView(discord.ui.View):
-    def __init__(self):
+    def __init__(self, parent_view):
         super().__init__()
         # unclaim button
         self.unclaim_button = discord.ui.Button(

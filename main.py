@@ -2,6 +2,9 @@ import discord
 from dotenv import load_dotenv
 import os
 
+from database.connect import init_db, close_db
+from manage_staff.manage_staff_view import ManageStaffView
+
 load_dotenv()
 
 # environment variables
@@ -23,7 +26,13 @@ def load_cogs():
 
 @bot.event
 async def on_ready():
+    await init_db()
+    bot.add_view(ManageStaffView())
     print(f'{bot.user} has connected to Discord!')
+
+@bot.event
+async def on_disconnect():
+    await close_db()
 
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token
 # For production, use environment variables or Replit secrets

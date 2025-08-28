@@ -1,4 +1,5 @@
 import discord
+from database.models import Creator
 
 class AddCreatorModal(discord.ui.Modal):
     def __init__(self):
@@ -11,11 +12,37 @@ class AddCreatorModal(discord.ui.Modal):
         )
         self.add_item(self.creator_name)
     
-    async def on_submit(self, interaction: discord.Interaction):
+    async def callback(self, interaction: discord.Interaction):
         # defer response because adding to database might take time
         await interaction.response.defer()
-
+        
+        # extract the creator name from form submission
         creator_name = self.creator_name.value
 
-        # add to database
-        await interaction.response.send_message(f"You have added {creator_name} as a creator.", ephemeral=True)
+        # check if creator already exists
+        creator = await Creator.filter(name=creator_name).first()
+
+        # if creator already exists and wasnt deleted
+        if creator and creator.soft_deleted == False:
+            await interaction.followup.send(
+                f"Creator **{creator.name}** already exists",
+                ephemeral=True
+            )
+            return
+
+        # if creator already exists, but was deleted
+        if creator and creator.soft_deleted == True:
+            creator.soft_deleted = True
+            await creator.save()
+            await interaction.followup.send(
+                f"Revived Creator **{creator.name}**",
+                ephemeral=True
+            )
+            return
+        
+        # if creator doesn't exist
+        creator = await Creator.create(name=creator_name)
+        await interaction.followup.send(
+            f"You have added **{creator_name}** as a creator",
+            ephemeral=True
+        )
