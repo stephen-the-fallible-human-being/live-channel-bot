@@ -17,7 +17,7 @@ class ReloadCog(commands.Cog):
             try:
                 # Try to reload if already loaded
                 await asyncio.to_thread(self.bot.reload_extension, extension_path)
-            except commands.ExtensionNotLoaded:
+            except discord.ExtensionNotLoaded:
                 # Load if not loaded yet
                 await asyncio.to_thread(self.bot.load_extension, extension_path)
                 action = "loaded"
@@ -40,7 +40,7 @@ class ReloadCog(commands.Cog):
                     try:
                         await asyncio.to_thread(self.bot.reload_extension, cog_name)
                         reloaded.append(cog_name.split('.')[-1])
-                    except commands.ExtensionNotLoaded:
+                    except discord.ExtensionNotLoaded:
                         await asyncio.to_thread(self.bot.load_extension, cog_name)
                 except Exception as e:
                     failed.append(f"{cog_name.split('.')[-1]}: {e}")

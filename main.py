@@ -2,7 +2,7 @@ import discord
 from dotenv import load_dotenv
 import os
 
-from database.connect import init_db, close_db
+from database.utils import init_db, close_db
 from manage_staff.manage_staff_view import ManageStaffView
 
 load_dotenv()
@@ -12,6 +12,7 @@ DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 
 # Bot setup
 intents = discord.Intents.default()
+intents.members = True
 bot = discord.Bot(intents=intents)
 
 def load_cogs():

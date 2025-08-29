@@ -3,4 +3,7 @@
 # SQLite Database
 *.sqlite
 *.db
-*.sqlite3
+*.sqlite3*
+
+# Python Cached Stuff
+*__pycache__

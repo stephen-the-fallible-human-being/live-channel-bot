@@ -1,6 +1,6 @@
 import discord
 
-from .add_delete_creator_view import AddDeleteCreatorView
+from .manage_creators import ManageCreatorsView
 
 class ManageStaffView(discord.ui.View):
     def __init__(self):
@@ -14,17 +14,10 @@ class ManageStaffView(discord.ui.View):
         self.add_item(self.creators_button)
         self.creators_button.callback = self.creators_callback
 
-        self.channel_managers_button = discord.ui.Button(
-            label="Manage Editors",
-            style=discord.ButtonStyle.gray,
-            custom_id="manage-editors-button"
-        )
-        self.add_item(self.channel_managers_button)
-        self.channel_managers_button.callback = self.channel_managers_callback
-
     async def creators_callback(self, interaction:discord.Interaction):
-        add_delete_creator_view = AddDeleteCreatorView()
-        await interaction.response.send_message("Manage Creators:", view=add_delete_creator_view, ephemeral=True)
-    
-    async def channel_managers_callback(self, interaction:discord.Interaction):
-        await interaction.response.send_message("Manage Editors:", ephemeral=True)
+        add_delete_creator_view = ManageCreatorsView()
+        await interaction.response.send_message(
+            "Manage Creators:",
+            view=add_delete_creator_view,
+            ephemeral=True
+        )

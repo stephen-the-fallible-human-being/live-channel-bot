@@ -32,7 +32,7 @@ class AddCreatorModal(discord.ui.Modal):
 
         # if creator already exists, but was deleted
         if creator and creator.soft_deleted == True:
-            creator.soft_deleted = True
+            creator.soft_deleted = False
             await creator.save()
             await interaction.followup.send(
                 f"Revived Creator **{creator.name}**",
