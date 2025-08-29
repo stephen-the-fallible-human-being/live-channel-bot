@@ -10,12 +10,12 @@ class RoleEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
-        # fetch thumbnail role id
+        # fetch thumbnail designer role id
         guild_config = await GuildConfig.get_or_none(guild_id=str(after.guild.id))
         if not guild_config:
             return
         
-        thumbnail_role_id = guild_config.thumbnail_role_id
+        thumbnail_designer_role_id = guild_config.thumbnail_designer_role_id
         editor_role_id = guild_config.editor_role_id
 
         # get roles before, get roles after
@@ -28,16 +28,15 @@ class RoleEventsCog(commands.Cog):
 
         # handle added roles
         for role_id in added_role_ids:
-            if thumbnail_role_id and str(role_id) == thumbnail_role_id:
+            # if the guild has a thumbnail role set (meaning we have set a role to watch for that we use as reference for our db)
+            if thumbnail_designer_role_id and str(role_id) == thumbnail_designer_role_id:
                 await add_designer(after)
             elif editor_role_id and str(role_id) == editor_role_id:
                 await add_editor(after)
          
         # handle removed roles
         for role_id in removed_role_ids:
-            # if the guild has a thumbnail role set (meaning we have set a role to watch for that acts as our designer store)
-            # then, if someone gets the designer role removed, they must be removed from the designer table in our db
-            if thumbnail_role_id and str(role_id) == thumbnail_role_id:
+            if thumbnail_designer_role_id and str(role_id) == thumbnail_designer_role_id:
                 await remove_designer(after) 
             elif editor_role_id and str(role_id) == editor_role_id:
                 await remove_editor(after)
