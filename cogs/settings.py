@@ -38,7 +38,7 @@ class SettingsCog(commands.Cog):
         description="Role to be set at the 'Editor' role",
         input_type=discord.SlashCommandOptionType.role
     )
-    async def set_designer_role(self, ctx: discord.ApplicationContext, role: discord.Role):
+    async def set_editor_role(self, ctx: discord.ApplicationContext, role: discord.Role):
         await GuildConfig.update_or_create(
             guild_id=str(ctx.guild.id),
             defaults={
