@@ -55,6 +55,8 @@ async def add_editor(member: discord.Member):
 
     # if already added, but previously removed
     if editor and editor.soft_deleted:
+        editor.soft_deleted = False
+        await editor.save()
         print(f"**{member.name}** has been revived as an **Editor**")
         return
 
@@ -73,7 +75,7 @@ async def remove_editor(member: discord.Member):
     
     # if editor was found, but was already removed
     if editor.soft_deleted:
-        print(f"**{member.name}** has already removed as an **Editor**.")
+        print(f"**{member.name}** has already been removed as an **Editor**.")
         return
 
     editor.soft_deleted = True
