@@ -28,6 +28,7 @@ MANIFEST
 
 # Database
 *.sqlite3*
+migrations/
 
 # IPython
 profile_default/
