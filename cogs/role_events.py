@@ -4,15 +4,16 @@ Handles automatic staff management based on Discord roles
 """
 import discord
 from discord.ext import commands
-from database.models import Editor, Designer, Overseer, GuildConfig
+from database.models import Editor, ThumbnailDesigner, Overseer, GuildConfig
+
 
 class RoleEvents(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     """" Role Event Listeners """
-    """
-    @commands.Cog.listener()
+
+    @commands.Cog.listener("on_member_update")
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         try:
             # Get roles that were added and removed
@@ -31,7 +32,7 @@ class RoleEvents(commands.Cog):
             print(f"Error in on_member_update: {e}")
     
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_member_remove")
     async def on_member_remove(self, member: discord.Member):
         try:
             for role in member.roles:
@@ -39,15 +40,14 @@ class RoleEvents(commands.Cog):
         except Exception as e:
             print(f"Error in on_member_remove: {e}")
 
+
     async def _handle_role_added(self, member: discord.Member, role: discord.Role):
         print(f"Role '{role.name}' (ID: {role.id}) added to {member.name}")
         
         # Get guild config to check if this role is configured
         guild_config = await GuildConfig.filter(guild_id=member.guild.id).first()
         if not guild_config:
-            print(f"No guild configuration found for server {member.guild.name} (ID: {member.guild.id})")
-            print("Please use /set-editor-role, /set-designer-role, and /set-overseer-role to configure roles first")
-            return  # No configuration found
+            return
         
         # Determine which type of role this is
         model_class = None
@@ -57,28 +57,27 @@ class RoleEvents(commands.Cog):
             model_class = Editor
             role_type = "Editor"
         elif role.id == guild_config.thumbnail_designer_role_id:
-            model_class = Designer
-            role_type = "Designer"
+            model_class = ThumbnailDesigner
+            role_type = "Thumbnail Designer"
         elif role.id == guild_config.overseer_role_id:
             model_class = Overseer
             role_type = "Overseer"
         else:
-            print(f"Role '{role.name}' (ID: {role.id}) is not configured as a staff role")
-            print(f"Configured roles: Editor={guild_config.editor_role_id}, Designer={guild_config.thumbnail_designer_role_id}, Overseer={guild_config.overseer_role_id}")
-            return  # Not a configured staff role
+            return
         
         try:
-            # Check if staff member already exists
+            # Check if the user is already assigned to the added role
             existing = await model_class.filter(discord_id=member.id).first()
             
             if existing:
+                # if the user already has the role, and is marked as active, do nothing
                 if existing.is_active:
-                    print(f"Member {member.name} already has active {role_type} role")
                     return
+                # if the user already has the role, but is marked as inactive, reactivate them
                 else:
-                    # Reactivate inactive staff member
                     existing.is_active = True
-                    if hasattr(existing, 'discord_username'):
+                    # update the username if it's different
+                    if existing.discord_username != member.name:
                         existing.discord_username = member.name
                     await existing.save()
                     print(f"Reactivated {role_type} role for {member.name}")
@@ -95,13 +94,14 @@ class RoleEvents(commands.Cog):
         except Exception as e:
             print(f"Error adding {role_type} role for {member.name}: {e}")
 
+
     async def _handle_role_removed(self, member, role):
+        print(f"Role '{role.name}' (ID: {role.id}) removed from {member.name}")
         
         # Get guild config to check if this role is configured
         guild_config = await GuildConfig.filter(guild_id=member.guild.id).first()
         if not guild_config:
-            print(f"No guild configuration found for server {member.guild.name} (ID: {member.guild.id})")
-            return  # No configuration found
+            return
         
         # Determine which type of role this is
         model_class = None
@@ -111,30 +111,26 @@ class RoleEvents(commands.Cog):
             model_class = Editor
             role_type = "Editor"
         elif role.id == guild_config.thumbnail_designer_role_id:
-            model_class = Designer
-            role_type = "Designer"
+            model_class = ThumbnailDesigner
+            role_type = "Thumbnail Designer"
         elif role.id == guild_config.overseer_role_id:
             model_class = Overseer
             role_type = "Overseer"
         else:
-            print(f"Role '{role.name}' (ID: {role.id}) is not configured as a staff role")
-            print(f"Configured roles: Editor={guild_config.editor_role_id}, Designer={guild_config.thumbnail_designer_role_id}, Overseer={guild_config.overseer_role_id}")
-            return  # Not a configured staff role
+            return
         
         try:
             # Find and deactivate the staff member
-            staff_member = await model_class.filter(discord_id=member.id).first()
-            
-            if staff_member and staff_member.is_active:
-                staff_member.is_active = False
-                await staff_member.save()
+            existing = await model_class.filter(discord_id=member.id).first()
+
+            if existing and existing.is_active:
+                existing.is_active = False
+                await existing.save()
                 print(f"Deactivated {role_type} role for {member.name}")
-            else:
-                print(f"No active {role_type} found for {member.name}")
                 
         except Exception as e:
             print(f"Error removing {role_type} role for {member.name}: {e}")
-        """
+        
 
 
     """" Role Setting Commands """
@@ -158,9 +154,9 @@ class RoleEvents(commands.Cog):
             view = discord.ui.LayoutView()
             container = discord.ui.Container(
                 discord.ui.TextDisplay(
-                    "## ✅ Editor Role Set",
-                    "Successfully set editor role to **{role.name}**"
-                    f"**Role ID:** {role.id}"
+                    "## Editor Role Set ✅\n"
+                    f"**Role:** {role.mention}\n"
+                    f"**Role ID:** {role.id}\n"
                 ),
                 accent_color=discord.Color.green(),
             )
@@ -172,9 +168,9 @@ class RoleEvents(commands.Cog):
             await interaction.response.send_message(f"❌ Error setting editor role: {str(e)}", ephemeral=True)
     
 
-    @role.command(name="set-designer-role", description="Set the role ID for thumbnail designers")
+    @role.command(name="set-thumbnail-designer-role", description="Set the role ID for thumbnail designers")
     @discord.app_commands.describe(role="The role to set for thumbnail designers")
-    async def set_designer_role(self, interaction: discord.Interaction, role: discord.Role):
+    async def set_thumbnail_designer_role(self, interaction: discord.Interaction, role: discord.Role):
         """Set the role ID for thumbnail designers in the database"""
         try:
             # Get or create guild config
@@ -190,8 +186,8 @@ class RoleEvents(commands.Cog):
             view = discord.ui.LayoutView()
             container = discord.ui.Container(
                 discord.ui.TextDisplay(
-                    "## ✅ Designer Role Set",
-                    f"Successfully set designer role to **{role.name}**",
+                    "## ✅ Thumbnail Designer Role Set\n"
+                    f"**Role:** {role.mention}\n"
                     f"**Role ID:** {role.id}"
                 ),
                 accent_color=discord.Color.green(),
@@ -201,7 +197,7 @@ class RoleEvents(commands.Cog):
             await interaction.response.send_message(view=view, ephemeral=True)
             
         except Exception as e:
-            await interaction.response.send_message(f"❌ Error setting designer role: {str(e)}", ephemeral=True)
+            await interaction.response.send_message(f"❌ Error setting thumbnail designer role: {str(e)}", ephemeral=True)
 
 
     @role.command(name="set-overseer-role", description="Set the role ID for overseers")
@@ -222,8 +218,8 @@ class RoleEvents(commands.Cog):
             view = discord.ui.LayoutView()
             container = discord.ui.Container(
                 discord.ui.TextDisplay(
-                    "## ✅ Overseer Role Set",
-                    f"Successfully set overseer role to **{role.name}**",
+                    "## ✅ Overseer Role Set\n"
+                    f"**Role:** {role.mention}\n"
                     f"**Role ID:** {role.id}"
                 ),
                 accent_color=discord.Color.green(),
@@ -253,36 +249,38 @@ class RoleEvents(commands.Cog):
             view = discord.ui.LayoutView()
             container = discord.ui.Container(
                 discord.ui.TextDisplay(
-                    "### ⚙️ Role Configuration",
-                    f"Current role settings for **{interaction.guild.name}**"
+                    "### ⚙️ Role Configuration"
                 ),
                 discord.ui.Separator()
             )
             if guild_config.editor_role_id:
+                editor_role = interaction.guild.get_role(guild_config.editor_role_id)
                 container.add_item(discord.ui.TextDisplay(
-                    f"**Editor Role:**"
-                    f"Role Name: {guild_config.editor_role_name}"
-                    f"Role ID: {guild_config.editor_role_id}"
+                    f"**Editor Role:**\n"
+                    f"Role Name: {editor_role.mention}\n"
+                    f"Role ID: {editor_role.id}"
                 ))
             else:
                 container.add_item(discord.ui.TextDisplay(
                     f"**Editor Role:** Not Set"
                 ))
-            if guild_config.designer_role_id:
+            if guild_config.thumbnail_designer_role_id:
+                thumbnail_designer_role = interaction.guild.get_role(guild_config.thumbnail_designer_role_id)
                 container.add_item(discord.ui.TextDisplay(
-                    f"**Designer Role:**"
-                    f"Role Name: {guild_config.designer_role_name}"
-                    f"Role ID: {guild_config.designer_role_id}"
+                    f"**Thumbnail Designer Role:**\n"
+                    f"Role Name: {thumbnail_designer_role.mention}\n"
+                    f"Role ID: {thumbnail_designer_role.id}"
                 ))
             else:
                 container.add_item(discord.ui.TextDisplay(
-                    f"**Designer Role:** Not Set"
+                    f"**Thumbnail Designer Role:** Not Set"
                 ))
             if guild_config.overseer_role_id:
+                overseer_role = interaction.guild.get_role(guild_config.overseer_role_id)
                 container.add_item(discord.ui.TextDisplay(
-                    f"**Overseer Role:**"
-                    f"Role Name: {guild_config.overseer_role_name}"
-                    f"Role ID: {guild_config.overseer_role_id}"
+                    f"**Overseer Role:**\n"
+                    f"Role Name: {overseer_role.mention}\n"
+                    f"Role ID: {overseer_role.id}"
                 ))
             else:
                 container.add_item(discord.ui.TextDisplay(

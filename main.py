@@ -3,13 +3,23 @@ Simple Discord Bot - Step 4: Organized with Cogs (using py-cord)
 """
 import discord
 from discord.ext import commands
-from database.config import init_database, close_database
+from database.utils import init_database, close_database
 import os
 from dotenv import load_dotenv
 
 # Create a bot instance
 intents = discord.Intents.default()
+intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
+
+
+@bot.tree.command(name="close", description="Close the bot")
+async def close(interaction: discord.Interaction):
+    await interaction.response.send_message("Closing the bot", ephemeral=True)
+    print("Closing database connection")
+    await close_database()
+    print("Closing bot connection")
+    await bot.close()
 
 
 async def load_cogs():
@@ -25,7 +35,7 @@ async def on_ready():
     print(f'{bot.user} has connected to Discord!')
     print(f'Bot is in {len(bot.guilds)} servers')
     await bot.tree.sync()
-    print(f"Bot has connected with {len(bot.commands)} commands")
+    print(f"Bot has connected with {len(bot.tree.get_commands())} commands")
 
 
 # Run the bot
